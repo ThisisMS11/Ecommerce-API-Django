@@ -20,3 +20,7 @@ DATABASES = {
 
 the tables will be built in the MongoDB database.
 ```
+
+## Django ORM
+Django ORM (**Object-Relational Mapping**) abstracts away the underlying database-specific queries, so you don't need to write database-specific SQL queries to interact with your chosen database. Instead, you work with Python code and Django's API to define and query your data models. Django ORM takes care of generating the appropriate SQL queries based on the database you're using. This allows you to write database-agnostic code, and you can switch between different database backends (e.g., PostgreSQL, MySQL, SQLite) without having to change your application's code significantly.
+
