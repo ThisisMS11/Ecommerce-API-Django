@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from users.models import User
+from users.models import CustomUser
 from django.core.validators import MinLengthValidator
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
@@ -16,7 +16,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         required=True,
         validators=[
             UniqueValidator(
-                queryset= User.objects.all()
+                queryset= CustomUser.objects.all()
             )
         ]
     )
@@ -43,7 +43,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = User
+        model = CustomUser
         fields=(
             "username",
             "email",
@@ -61,7 +61,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         print(f"my new  user data  : {validated_data}")
-        user = User.objects.create_user(
+        user = CustomUser.objects.create_user(
             username = validated_data['username'],
             email = validated_data["email"],
         )

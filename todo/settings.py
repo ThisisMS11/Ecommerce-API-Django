@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "users.apps.UsersConfig",
+    "notes.apps.NotesConfig",
     "authTokens.apps.AuthTokensConfig",
     "rest_framework_simplejwt.token_blacklist",
 ]
@@ -79,13 +80,13 @@ WSGI_APPLICATION = "todo.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "djongo",
-        "CLIENT": {
-            'host':'mongodb://admin:password@localhost:27017/',
-            'port':27017,
-        },
-        "NAME":'DjangoMongo1'
+     "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "Todo",
+        "USER": "mohit",
+        "PASSWORD": "Mohit123*",
+        "HOST": "127.0.0.1",
+        "PORT": "5432",
     }
 }
 
@@ -130,7 +131,7 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = "users.User"
+AUTH_USER_MODEL = "users.CustomUser"
 
 
 

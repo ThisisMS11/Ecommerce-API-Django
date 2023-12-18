@@ -5,3 +5,4 @@ include/
 .env
 superusers.txt
 nextjob.txt
+status.txt
