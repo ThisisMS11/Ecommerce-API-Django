@@ -21,8 +21,19 @@ class CustomNotesSerializer(serializers.ModelSerializer):
             "content",
             "tags"
         )
-        
+
     def create(self, validated_data):
         tags = validated_data.pop('tags', [])  # Extract tags from validated_data
         instance = self.Meta.model.objects.create_note(tags=tags, **validated_data)
         return instance
+    
+class getNotesSerializer(serializers.ModelSerializer):
+    class Meta : 
+        model = Notes
+        fields = "__all__"
+        depth  = 1
+
+class notesUpdateSerializer(serializers.ModelSerializer):
+    class Meta :
+        model = Notes
+        fields = ("content","tags")

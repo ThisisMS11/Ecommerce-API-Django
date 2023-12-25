@@ -4,6 +4,7 @@ from django.utils import timezone
 from users.models import CustomUser
 from django.contrib.postgres.fields import ArrayField
 
+#  managers are just providing an extra level of abstraction , there not necessarily have to be used. 
 class CustomNotesManager(models.Manager):
     def create_note(self, content, tags, user=None):
         if not content:
