@@ -6,33 +6,23 @@ class CustomNotesSerializer(serializers.ModelSerializer):
     content = serializers.CharField(
         required=True,
         validators=[
-            MinLengthValidator(100)  
+            MinLengthValidator(15)  
         ]
     )
 
     tags = serializers.ListField(
-        child=serializers.CharField(max_length=50), 
-        required=False
+        child=serializers.CharField(max_length=5), 
+        required=True
     )
-
 
     class Meta:
         model = Notes
-        fields=(
+        fields = (
             "content",
             "tags"
         )
-
-    
+        
     def create(self, validated_data):
-        print(f"my new  user data  : {validated_data}")
-        user = Notes.objects.create_user(
-            username = validated_data['username'],
-            email = validated_data["email"],
-        )
-        user.set_password(validated_data["password"])
-        user.save()
-
-        # here the returned user is the user's email 
-        return user
-    
+        tags = validated_data.pop('tags', [])  # Extract tags from validated_data
+        instance = self.Meta.model.objects.create_note(tags=tags, **validated_data)
+        return instance

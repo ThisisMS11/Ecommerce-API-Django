@@ -21,5 +21,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("user/",include("users.urls"),name='users'),
     path("auth/",include("authTokens.urls"), name='authtokens'),
-    path("notes/",include("notes.urls"))
+    path("notes/",include("notes.urls"),name='notes')
 ]

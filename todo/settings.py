@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-zxx4i4olr8e=rkepq)mowma9uiff486#fn7xk9v(!jvxe9qae0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
+    'django.contrib.postgres',
     "rest_framework",
     "django.contrib.messages",
     "django.contrib.staticfiles",
@@ -80,9 +81,9 @@ WSGI_APPLICATION = "todo.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-     "default": {
+    "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "Todo",
+        "NAME": "todo",
         "USER": "mohit",
         "PASSWORD": "Mohit123*",
         "HOST": "127.0.0.1",
