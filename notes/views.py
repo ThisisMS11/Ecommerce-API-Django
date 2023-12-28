@@ -1,84 +1,60 @@
-from rest_framework import generics, permissions,status
+from rest_framework import viewsets, status,permissions
+from rest_framework.response import Response
+from .models import Notes
+from .serializers import NoteSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
-from notes.models import Notes
-from rest_framework.response import Response
-from notes.serializers import CustomNotesSerializer , getNotesSerializer ,notesUpdateSerializer
-from django.http import Http404
-from django.shortcuts import get_object_or_404
 
+class NoteViewSet(viewsets.ModelViewSet):
 
-# To create a note
-class NotesViews(generics.CreateAPIView):
-    serializer_class = CustomNotesSerializer
-    authentication_classes = [JWTAuthentication, SessionAuthentication, TokenAuthentication]
+    queryset = Notes.objects.all()
+    serializer_class = NoteSerializer
+    authentication_classes = [JWTAuthentication,SessionAuthentication,TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     
+    # In Django REST Framework (DRF), the lookup_field attribute in a viewset is used to specify the field that should be used for looking up individual instances of the model when processing detail requests.
+    lookup_field = 'id'
 
-    def get_serializer_class(self):
-        if self.request.method == 'POST':
-            return CustomNotesSerializer
-        return CustomNotesSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-# to list down all the notes 
-class ListNotesView(generics.ListAPIView):
-    serializer_class = getNotesSerializer
-    authentication_classes = [JWTAuthentication, SessionAuthentication, TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user  # Access the current user
-        return Notes.objects.filter(user=user)  # Filter notes for that user
+        return Notes.objects.filter(user = self.request.user)
 
-# to delete a note 
-class DeleteNoteViews(generics.DestroyAPIView):
-    queryset = Notes.objects.all()
-    authentication_classes = [JWTAuthentication, SessionAuthentication, TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    def create(self, request, *args, **kwargs):
+        # The get_serializer method is a part of the ModelViewSet and returns an instance of the serializer associated with the view.here NoteSerializer
+        serializer = self.get_serializer(data=request.data)
 
-    def delete(self, request, *args, **kwargs):
-        """Handle the deletion and return a success response."""
-        id = kwargs.get("id")
-        note = Notes.objects.filter(id=id, user=self.request.user).first()
+        # Checks if the data provided to the serializer is valid
+        serializer.is_valid(raise_exception=True)
 
-        if note is None:
-            raise Http404("Note not found.")
+        # Set the user of the new note to the currently authenticated user
+        serializer.validated_data['user'] = self.request.user
 
-        self.perform_destroy(note)
+        # Calls the perform_create method, which is a hook in the ModelViewSet that allows you to perform additional actions during the creation process.
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        print('serializer : \n', serializer,"\n");
+
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
 
-
-class UpdateNoteViews(generics.UpdateAPIView):
-    serializer_class = notesUpdateSerializer
-    queryset = Notes.objects.all()
-    authentication_classes = [JWTAuthentication, SessionAuthentication, TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
-
-    # this is to get the desired note using the id given.
-    def get_object(self):
-        note_id = self.kwargs.get('id')
-        if note_id is None:
-            raise Http404('Note not found')
-        return get_object_or_404(self.queryset, id=note_id, user=self.request.user)
-
-    # Handles GET requests to the update endpoint. Retrieves the existing note object, serializes it, and returns the serialized data as a response. This is used to pre-fill the DRF interface.
-    def get(self, request, *args, **kwargs):
-        # id = kwargs.get('id');
-        # print('id  : ', id)
+    def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
-
-    def partial_update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
-
-
-

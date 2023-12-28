@@ -1,11 +1,12 @@
-from django.urls import path
+from django.urls import path,include
+from rest_framework.routers import DefaultRouter
 from . import views
 
 app_name = "notes"
 
+router = DefaultRouter()
+router.register("",views.NoteViewSet)
+
 urlpatterns=[
-    path("",views.ListNotesView.as_view()),
-    path("create/",views.NotesViews.as_view()),
-    path("delete/<int:id>", views.DeleteNoteViews.as_view()),
-    path("update/<int:id>", views.UpdateNoteViews.as_view()),
+    path("",include(router.urls)),
 ]

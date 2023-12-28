@@ -1,39 +1,25 @@
 from rest_framework import serializers
-from notes.models import Notes
+from .models import Notes
 from django.core.validators import MinLengthValidator
 
-class CustomNotesSerializer(serializers.ModelSerializer):
+class NoteSerializer(serializers.ModelSerializer):
     content = serializers.CharField(
         required=True,
         validators=[
-            MinLengthValidator(15)  
-        ]
+            MinLengthValidator(15)
+        ],
+        max_length = 200
     )
 
     tags = serializers.ListField(
-        child=serializers.CharField(max_length=5), 
-        required=True
+        child = serializers.CharField(
+            max_length = 10
+        )
     )
-
     class Meta:
         model = Notes
-        fields = (
-            "content",
-            "tags"
-        )
+        fields = ['id', 'content', 'tags',]
+        read_only_fields = ['id']
 
-    def create(self, validated_data):
-        tags = validated_data.pop('tags', [])  # Extract tags from validated_data
-        instance = self.Meta.model.objects.create_note(tags=tags, **validated_data)
-        return instance
-    
-class getNotesSerializer(serializers.ModelSerializer):
-    class Meta : 
-        model = Notes
-        fields = "__all__"
-        depth  = 1
-
-class notesUpdateSerializer(serializers.ModelSerializer):
-    class Meta :
-        model = Notes
-        fields = ("content","tags")
+    # # Ensure that the 'user' field is required
+    # user = serializers.HiddenField(default=serializers.CurrentUserDefault())
