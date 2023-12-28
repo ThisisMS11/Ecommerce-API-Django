@@ -15,7 +15,6 @@ class NoteViewSet(viewsets.ModelViewSet):
     # In Django REST Framework (DRF), the lookup_field attribute in a viewset is used to specify the field that should be used for looking up individual instances of the model when processing detail requests.
     lookup_field = 'id'
 
-
     def get_queryset(self):
         return Notes.objects.filter(user = self.request.user)
 
@@ -44,9 +43,6 @@ class NoteViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-
-        print('serializer : \n', serializer,"\n");
-
         return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):

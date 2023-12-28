@@ -14,7 +14,8 @@ class NoteSerializer(serializers.ModelSerializer):
     tags = serializers.ListField(
         child = serializers.CharField(
             max_length = 10
-        )
+        ),
+        required= False
     )
     class Meta:
         model = Notes
